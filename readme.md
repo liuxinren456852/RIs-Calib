@@ -38,7 +38,11 @@ Aided inertial navigation system (INS), typically consisting of an inertial meas
 </details>
 <div align='center'><font size='5' color='red'><b><i>Demo Video for RIs-Calib</i></b></font></div>
 
-https://github.com/Unsigned-Long/RIs-Calib-Private/assets/76953144/9ae8a366-4779-4688-8a04-8451b6385c2b
+
+
+https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac26-1737881c1968
+
+
 
 ## 2. Build RIs-Calib
 
