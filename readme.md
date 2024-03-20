@@ -122,7 +122,7 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
   catkin_make -DCATKIN_WHITELIST_PACKAGES="ainstein_radar;ti_mmwave_rospkg;serial;sbg_driver"
   ```
 
-  Note that this package will depend on many other ros packages, you need to install them patiently.
+  Note that these packages will depend on many other ros packages, you need to install them patiently.
 
 + change directory to the ros workspace (i.e., '`{*}/RIs-Calib`'), and run:
 
