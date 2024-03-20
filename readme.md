@@ -48,7 +48,7 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
 
 ### 2.1 Preparation
 
-+ Install `ROS` (for Ubuntu 20.04):
++ Install `ROS1` (Ubuntu **20.04** is suggested, Ubuntu **18.04** (ros melodic) is also available):
 
   ```bash
   sudo apt install ros-noetic-desktop-full
@@ -56,9 +56,11 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
   source ~/.bashrc
   ```
 
+  **Requirements: ROS1 & C++17 Support**
+
 + Install `Ceres`:
 
-  see the `GitHub` Profile of **[Ceres](https://github.com/ceres-solver/ceres-solver.git)** library, clone it, compile it, and install it. Make sure that the newest version of `Ceres` is obtained, so that the `Manifold` module is involved.
+  see the `GitHub` Profile of **[Ceres](https://github.com/ceres-solver/ceres-solver.git)** library, clone it, compile it, and install it. **Make sure that the version of `Ceres` contains the `Manifold` module. (`Ceres` version equal to 2.2.0 or higher than that)**
 
 + install `Sophus`:
 
@@ -68,32 +70,16 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
 
   see the `GitHub` Profile of **[magic-enum](https://github.com/Neargye/magic_enum.git)** library, clone it, compile it, and install it.
 
-+ install `fmt`:
-
-  ```bash
-  sudo apt-get install libfmt-dev
-  ```
-
-+ Install `Cereal`:
-
-  ```bash
-  sudo apt-get install libcereal-dev
-  ```
-
-+ install `spdlog`:
-
-  ```bash
-  sudo apt-get install libspdlog-dev
-  ```
-
-
 + install `Pangolin`:
 
   see the `GitHub` Profile of **[Pangolin](https://github.com/stevenlovegrove/Pangolin.git)** library, clone it, compile it, and install it.
 
-+ install `yaml-cpp`:
++ install `fmt`, `Cereal`, `spdlog`, `yaml-cpp`:
 
   ```bash
+  sudo apt-get install libfmt-dev
+  sudo apt-get install libcereal-dev
+  sudo apt-get install libspdlog-dev
   sudo apt-get install libyaml-cpp-dev
   ```
 
