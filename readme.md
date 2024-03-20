@@ -48,7 +48,7 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
 
 ### 2.1 Preparation
 
-+ Install `ROS1` (Ubuntu **20.04** is suggested, Ubuntu **18.04** (ros melodic) is also available):
++ install `ROS1` (Ubuntu **20.04** is suggested, Ubuntu **18.04** (ros melodic) is also available):
 
   ```bash
   sudo apt install ros-noetic-desktop-full
@@ -58,7 +58,7 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
 
   **Requirements: ROS1 & C++17 Support**
 
-+ Install `Ceres`:
++ install `Ceres`:
 
   see the `GitHub` Profile of **[Ceres](https://github.com/ceres-solver/ceres-solver.git)** library, clone it, compile it, and install it. **Make sure that the version of `Ceres` contains the `Manifold` module. (`Ceres` version equal to 2.2.0 or higher than that)**
 
@@ -146,16 +146,16 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
 
 ### 3.3 Skip Tutorial
 
-Find a **configure file** in `{*}/RIs-Calib/src/ris_calib/config` or from the open-source datasets:
+Find a **configure file** named `config-real-world.yaml` in `{*}/RIs-Calib/src/ris_calib/config` **or** from the open-source datasets below:
 
 ```txt
 # Google Drive
 https://drive.google.com/drive/folders/1_SPdmBnWIJTYyOIkyS0StbPMGVLdV_fw?usp=drive_link
 ```
 
-Then change the fields in the configure files to be compatible with your dataset (there are detailed comments for each field). You only need to change a few fields related to io (input and output), perhaps some additional fields related to optimization.
+Then **change the fields** in the configure files to be compatible with your dataset (there are detailed comments for each field). You only need to change a few fields related to io (input and output), perhaps some additional fields related to optimization.
 
-Then give the path of your configuration file to the launch file of `RIs-Calib` named `ris-calib-prog.launch` in folder `{*}/RIs-Calib/src/ris_calib/launch`, Then, we launch '`RIs-Calib`':
+Then **give the path of your configuration file to the launch file** of `RIs-Calib` named `ris-calib-prog.launch` in folder `{*}/RIs-Calib/src/ris_calib/launch`, Then, we **launch** '`RIs-Calib`':
 
 ```sh
 roslaunch ris_calib ris-calib-prog.launch
