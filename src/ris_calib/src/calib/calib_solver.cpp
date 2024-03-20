@@ -4,7 +4,7 @@
 // systems and multi-sensor fusion.
 
 #include "calib/calib_solver.h"
-#include "calib/trajectory_estimator.h"
+#include "calib/spline_estimator.h"
 #include "tiny-viewer/core/multi_viewer.h"
 #include "pangolin/display/display.h"
 
@@ -19,7 +19,7 @@ namespace ns_ris {
 
     CalibSolver::CalibSolver(CalibDataManager::Ptr calibDataManager, CalibParamManager::Ptr calibParamManager)
             : _dataManager(std::move(calibDataManager)), _paramManager(std::move(calibParamManager)),
-              _ceresOption(TrajectoryEstimator::DefaultSolverOptions(Configor::Preference::ThreadsToUse)),
+              _ceresOption(SplineEstimator::DefaultSolverOptions(Configor::Preference::ThreadsToUse)),
               _solveFinished(false) {
         _trajectory = Trajectory::Create(
                 Configor::Prior::SplineKnotTimeDistance,
@@ -104,7 +104,7 @@ namespace ns_ris {
         // ------------------------------
         spdlog::info("fit rotational b-spline...");
 
-        auto estimator = TrajectoryEstimator::Create(_trajectory, _paramManager);
+        auto estimator = SplineEstimator::Create(_trajectory, _paramManager);
         for (const auto &[imuTopic, mes]: _dataManager->GetIMUMeasurements()) {
             for (const auto &item: mes) {
                 estimator->AddIMUGyroMeasurement(
@@ -113,7 +113,7 @@ namespace ns_ris {
                 );
             }
         }
-        estimator->FixSO3ControlPointAt(0);
+        estimator->FixFirSO3ControlPoint();
         estimator->AddSO3Centralization(_paramManager->EXTRI.SO3_BiToBc_AddressVec(), 1E4, OptOption::OPT_SO3_BiToBc);
         auto sum1 = estimator->Solve(_ceresOption);
         spdlog::info("here is the summary:\n{}\n", sum1.BriefReport());
@@ -122,7 +122,7 @@ namespace ns_ris {
         // step2: extrinsics initialization
         // --------------------------------
         spdlog::info("extrinsics initialization...");
-        estimator = TrajectoryEstimator::Create(_trajectory, _paramManager);
+        estimator = SplineEstimator::Create(_trajectory, _paramManager);
         for (const auto &[radarTopic, radarMes]: _dataManager->GetRadarMeasurements()) {
             for (int i = 0; i < static_cast<int>(radarMes.size()) - 1; ++i) {
                 int j = i + 1;
@@ -162,7 +162,7 @@ namespace ns_ris {
 
         spdlog::info("extrinsics refinement & velocity b-spline recovery...");
 
-        estimator = TrajectoryEstimator::Create(_trajectory, _paramManager);
+        estimator = SplineEstimator::Create(_trajectory, _paramManager);
         // ----------------------------------------------------------------------------------
         // adding radar factors in initialization is probably not a good choice,  since the
         // time offset has not been initialized, and using two asynchronous data (i.e., radar
@@ -207,7 +207,7 @@ namespace ns_ris {
         spdlog::info("  gyroscope opt option: {}", GetOptString(gyroOptOption));
 
         int IMUFactorCount = 0, radarFactorCount = 0;
-        auto estimator = TrajectoryEstimator::Create(_trajectory, _paramManager);
+        auto estimator = SplineEstimator::Create(_trajectory, _paramManager);
         for (const auto &[topic, mes]: _dataManager->GetIMUMeasurements()) {
             for (const auto &item: mes) {
                 // gyro factors
@@ -227,7 +227,7 @@ namespace ns_ris {
             }
         }
         spdlog::info("IMU factor count: {}, radar factor count: {}", IMUFactorCount, radarFactorCount);
-        estimator->FixSO3ControlPointAt(0);
+        estimator->FixFirSO3ControlPoint();
         // Central factors
         estimator->AddSO3Centralization(
                 _paramManager->EXTRI.SO3_BiToBc_AddressVec(), 1E4, OptOption::OPT_SO3_BiToBc
@@ -272,7 +272,7 @@ namespace ns_ris {
         viewer.RunInSingleThread();
     }
 
-    void CalibSolver::SaveEquationGraph(const TrajectoryEstimator::Ptr &estimator) {
+    void CalibSolver::SaveEquationGraph(const SplineEstimator::Ptr &estimator) {
         const static std::string dir = Configor::DataStream::OutputPath + "/lm_equ_graph";
         static int count = 0;
         if (count == 0) {

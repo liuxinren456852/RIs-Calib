@@ -7,7 +7,7 @@
 #define RIS_CALIB_RADAR_MODEL_HPP
 
 #include "ctraj/core/simu_trajectory.h"
-#include "calib/trajectory_estimator.h"
+#include "calib/spline_estimator.h"
 
 namespace ns_ris {
     struct RadarModelLearner {
@@ -166,7 +166,7 @@ namespace ns_ris {
                 // ------------------------------
                 spdlog::info("fit rotational b-spline");
 
-                auto estimator = TrajectoryEstimator::Create(trajectory, calibParam);
+                auto estimator = SplineEstimator::Create(trajectory, calibParam);
 
                 for (const auto &item: imuData) {
                     // this factor is fine!!!
@@ -176,7 +176,7 @@ namespace ns_ris {
                 }
                 estimator->AddSO3Centralization(calibParam->EXTRI.SO3_BiToBc_AddressVec(), 1E4,
                                                 OptOption::OPT_SO3_BiToBc);
-                estimator->FixSO3ControlPointAt(0);
+                estimator->FixFirSO3ControlPoint();
 
                 // for (const auto &item: BtoB0.Sampling(0.001)) {
                 //     ns_ctraj::Posed pose = item;
@@ -231,7 +231,7 @@ namespace ns_ris {
                 //     std::cout << v3.transpose() << std::endl;
                 //     std::cout << v4.transpose() << std::endl << std::endl << std::endl;
                 // }
-                auto estimator = TrajectoryEstimator::Create(trajectory, calibParam);
+                auto estimator = SplineEstimator::Create(trajectory, calibParam);
                 for (int i = 0; i < static_cast<int>(mesVec.size()) - 1; ++i) {
                     int j = i + 1;
                     const auto &arrayI = mesVec.at(i);
@@ -258,7 +258,7 @@ namespace ns_ris {
                 // --------------------------------
                 spdlog::info("extrinsics initialization");
 
-                auto estimator = TrajectoryEstimator::Create(trajectory, calibParam);
+                auto estimator = SplineEstimator::Create(trajectory, calibParam);
                 for (const auto &item: mesVec) {
                     for (const auto &item2: item->GetTargets()) {
                         // this factor is ok!
@@ -288,7 +288,7 @@ namespace ns_ris {
                 Configor::Prior::TimeOffsetPadding = 0.01;
 
                 spdlog::info("batch optimization");
-                auto estimator = TrajectoryEstimator::Create(trajectory, calibParam);
+                auto estimator = SplineEstimator::Create(trajectory, calibParam);
                 for (const auto &item: imuData) {
                     estimator->AddIMUGyroMeasurement(
                             item, imuTopic, OptOption::OPT_SO3 | OptOption::OPT_SO3_BiToBc |
@@ -313,7 +313,7 @@ namespace ns_ris {
                         );
                     }
                 }
-                estimator->FixSO3ControlPointAt(0);
+                estimator->FixFirSO3ControlPoint();
                 estimator->AddSO3Centralization(
                         calibParam->EXTRI.SO3_BiToBc_AddressVec(), 1E4, OptOption::OPT_SO3_BiToBc
                 );

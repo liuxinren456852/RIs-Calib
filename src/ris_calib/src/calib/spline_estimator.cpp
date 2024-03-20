@@ -3,7 +3,7 @@
 // the school of Geodesy and Geomatics, Wuhan University. His area of research currently focuses on integrated navigation
 // systems and multi-sensor fusion.
 
-#include "calib/trajectory_estimator.h"
+#include "calib/spline_estimator.h"
 #include <utility>
 #include "factor/imu_acce_factor.hpp"
 #include "factor/imu_gyro_factor.hpp"
@@ -13,15 +13,15 @@
 
 namespace ns_ris {
 
-    TrajectoryEstimator::TrajectoryEstimator(const Trajectory::Ptr &trajectory, CalibParamManager::Ptr calibParam)
+    SplineEstimator::SplineEstimator(const Trajectory::Ptr &trajectory, CalibParamManager::Ptr calibParam)
             : Parent(trajectory), _calibParam(std::move(calibParam)) {}
 
-    TrajectoryEstimator::Ptr
-    TrajectoryEstimator::Create(const Trajectory::Ptr &trajectory, const CalibParamManager::Ptr &calibParam) {
-        return std::make_shared<TrajectoryEstimator>(trajectory, calibParam);
+    SplineEstimator::Ptr
+    SplineEstimator::Create(const Trajectory::Ptr &trajectory, const CalibParamManager::Ptr &calibParam) {
+        return std::make_shared<SplineEstimator>(trajectory, calibParam);
     }
 
-    LMEquation TrajectoryEstimator::Evaluate(const std::map<const double *, std::string> &targetParamsInfoMapRaw) {
+    LMEquation SplineEstimator::Evaluate(const std::map<const double *, std::string> &targetParamsInfoMapRaw) {
         std::map<const double *, std::string> targetParamsInfoMap;
         for (const auto &[key, value]: targetParamsInfoMapRaw) {
             if (this->HasParameterBlock(key)) { targetParamsInfoMap.insert({key, value}); }
@@ -87,7 +87,7 @@ namespace ns_ris {
         return {hMat, bVec, paramDesc, residualsMap};
     }
 
-    LMEquation TrajectoryEstimator::Evaluate(
+    LMEquation SplineEstimator::Evaluate(
             const std::initializer_list<std::map<const double *, std::string>> &targetParamsInfoMaps) {
 
         std::map<const double *, std::string> targetParamsInfoMap;
@@ -112,8 +112,8 @@ namespace ns_ris {
      * [ SO3 | ... | SO3 | VEL | ... | VEL | ACCE_BIAS | ACCE_MAP_COEFF | GRAVITY |
      *   SO3_BiToBc | POS_BiInBc | TIME_OFFSET_BiToBc ]
      */
-    void TrajectoryEstimator::AddIMUAcceMeasurement(const IMUFrame::Ptr &imuFrame, const std::string &topic,
-                                                    int option, double acceWeight) {
+    void SplineEstimator::AddIMUAcceMeasurement(const IMUFrame::Ptr &imuFrame, const std::string &topic,
+                                                int option, double acceWeight) {
         // find the affected control points
         SplineMeta splineMeta;
 
@@ -234,8 +234,8 @@ namespace ns_ris {
      * param blocks:
      * [ SO3 | ... | SO3 | GYRO_BIAS | GYRO_MAP_COEFF | SO3_AtoG | SO3_BiToBc | TIME_OFFSET_BiToBc ]
      */
-    void TrajectoryEstimator::AddIMUGyroMeasurement(const IMUFrame::Ptr &imuFrame, const std::string &topic,
-                                                    int option, double gyroWeight) {
+    void SplineEstimator::AddIMUGyroMeasurement(const IMUFrame::Ptr &imuFrame, const std::string &topic,
+                                                int option, double gyroWeight) {
         // find the affected control points
         SplineMeta splineMeta;
 
@@ -342,8 +342,8 @@ namespace ns_ris {
      * param blocks:
      * [ SO3 | ... | SO3 | VEL | ... | VEL | SO3_RjToBc | POS_RjInBc | TIME_OFFSET_RjToBc ]
      */
-    void TrajectoryEstimator::AddRadarMeasurement(const RadarTarget::Ptr &radarFrame, const std::string &topic,
-                                                  int option, double weight) {
+    void SplineEstimator::AddRadarMeasurement(const RadarTarget::Ptr &radarFrame, const std::string &topic,
+                                              int option, double weight) {
         SplineMeta splineMeta;
 
         // different relative control points finding [single vs. range]
@@ -430,8 +430,8 @@ namespace ns_ris {
      * [ VEL | ... | VEL | GRAVITY | POS_BiInBc ]
      */
     void
-    TrajectoryEstimator::AddVelPreIntegration(const std::vector<IMUFrame::Ptr> &imuMes, const std::string &imuTopic,
-                                              double ti, double tj, int option, double weight) {
+    SplineEstimator::AddVelPreIntegration(const std::vector<IMUFrame::Ptr> &imuMes, const std::string &imuTopic,
+                                          double ti, double tj, int option, double weight) {
         SplineMeta splineMeta;
 
         if (!_trajectory->TimeStampInRange(ti) || !_trajectory->TimeStampInRange(tj)) { return; }
@@ -502,8 +502,8 @@ namespace ns_ris {
     /**
      * [ SO3_BiToBc ]
      */
-    void TrajectoryEstimator::AddSO3Centralization(const std::vector<Sophus::SO3d *> &SO3_StoRef,
-                                                   double weight, std::uint32_t option) {
+    void SplineEstimator::AddSO3Centralization(const std::vector<Sophus::SO3d *> &SO3_StoRef,
+                                               double weight, std::uint32_t option) {
         auto costFunc = SO3CentralizationFactor::Create(SO3_StoRef.size(), weight);
 
         std::vector<double *> paramBlockVec;
@@ -526,8 +526,8 @@ namespace ns_ris {
     /**
      * [ POS_BiInBc ]
      */
-    void TrajectoryEstimator::AddPOSCentralization(const std::vector<Eigen::Vector3d *> &POS_SinRef,
-                                                   double weight, std::uint32_t option) {
+    void SplineEstimator::AddPOSCentralization(const std::vector<Eigen::Vector3d *> &POS_SinRef,
+                                               double weight, std::uint32_t option) {
         auto costFunc = POSCentralizationFactor::Create(POS_SinRef.size(), weight);
 
         std::vector<double *> paramBlockVec;
@@ -548,8 +548,8 @@ namespace ns_ris {
     /**
      * [ TIME_OFFSET_BiToBc ]
      */
-    void TrajectoryEstimator::AddTimeOffsetCentralization(const std::vector<double *> &TIME_OFFSET_StoRef,
-                                                          double weight, std::uint32_t option) {
+    void SplineEstimator::AddTimeOffsetCentralization(const std::vector<double *> &TIME_OFFSET_StoRef,
+                                                      double weight, std::uint32_t option) {
         auto costFunc = TimeOffsetCentralizationFactor::Create(TIME_OFFSET_StoRef.size(), weight);
 
         std::vector<double *> paramBlockVec;
@@ -578,12 +578,12 @@ namespace ns_ris {
      * param blocks:
      * [ GRAVITY | POS_BiInBc | SO3_RjToBc | POS_RjInBc ]
      */
-    void TrajectoryEstimator::AddDiscreteVelPreIntegration(const std::vector<IMUFrame::Ptr> &imuMes,
-                                                           const std::string &imuTopic, const std::string &radarTopic,
-                                                           double ti, double tj,
-                                                           const Eigen::Vector3d &radarVelI,
-                                                           const Eigen::Vector3d &radarVelJ,
-                                                           int option, double weight) {
+    void SplineEstimator::AddDiscreteVelPreIntegration(const std::vector<IMUFrame::Ptr> &imuMes,
+                                                       const std::string &imuTopic, const std::string &radarTopic,
+                                                       double ti, double tj,
+                                                       const Eigen::Vector3d &radarVelI,
+                                                       const Eigen::Vector3d &radarVelJ,
+                                                       int option, double weight) {
         auto [sIter, eIter] = ExtractRange(imuMes, ti, tj);
         std::vector<std::pair<double, Eigen::Matrix3d>> reorganizedSubData1;
         std::vector<std::pair<double, Eigen::Vector3d>> reorganizedSubData2;
@@ -652,20 +652,14 @@ namespace ns_ris {
         }
     }
 
-    // ---------------------
-    // public help functions
-    // ---------------------
-    void TrajectoryEstimator::FixSO3ControlPointAt(int idx) {
-        auto data = _trajectory->GetSo3Spline().GetKnot(idx).data();
-        if (this->HasParameterBlock(data)) {
-            this->SetParameterBlockConstant(data);
-        }
-    }
-
-    void TrajectoryEstimator::FixPOSControlPointAt(int idx) {
-        auto data = _trajectory->GetPosSpline().GetKnot(idx).data();
-        if (this->HasParameterBlock(data)) {
-            this->SetParameterBlockConstant(data);
+    void SplineEstimator::FixFirSO3ControlPoint() {
+        const auto &so3Spline = this->_trajectory->GetSo3Spline();
+        for (int i = 0; i < static_cast<int>(so3Spline.GetKnots().size()); ++i) {
+            auto data = so3Spline.GetKnot(i).data();
+            if (this->HasParameterBlock(data)) {
+                this->SetParameterBlockConstant(data);
+                break;
+            }
         }
     }
 }

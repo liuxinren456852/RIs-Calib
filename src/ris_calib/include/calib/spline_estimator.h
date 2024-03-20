@@ -3,8 +3,8 @@
 // the school of Geodesy and Geomatics, Wuhan University. His area of research currently focuses on integrated navigation
 // systems and multi-sensor fusion.
 
-#ifndef RIS_CALIB_TRAJECTORY_ESTIMATOR_H
-#define RIS_CALIB_TRAJECTORY_ESTIMATOR_H
+#ifndef RIS_CALIB_SPLINE_ESTIMATOR_H
+#define RIS_CALIB_SPLINE_ESTIMATOR_H
 
 #include "ctraj/core/trajectory_estimator.h"
 #include "config/configor.h"
@@ -133,9 +133,9 @@ namespace ns_ris {
         };
     };
 
-    class TrajectoryEstimator : public ns_ctraj::TrajectoryEstimator<Configor::Prior::SplineOrder> {
+    class SplineEstimator : public ns_ctraj::TrajectoryEstimator<Configor::Prior::SplineOrder> {
     public:
-        using Ptr = std::shared_ptr<TrajectoryEstimator>;
+        using Ptr = std::shared_ptr<SplineEstimator>;
         using Parent = ns_ctraj::TrajectoryEstimator<Configor::Prior::SplineOrder>;
         using SplineMeta = ns_ctraj::SplineMeta<Configor::Prior::SplineOrder>;
         using Trajectory = ns_ctraj::Trajectory<Configor::Prior::SplineOrder>;
@@ -145,7 +145,7 @@ namespace ns_ris {
 
         std::vector<CeresFactor> _factors;
     public:
-        explicit TrajectoryEstimator(const Trajectory::Ptr &trajectory, CalibParamManager::Ptr calibParam);
+        explicit SplineEstimator(const Trajectory::Ptr &trajectory, CalibParamManager::Ptr calibParam);
 
         static Ptr Create(const Trajectory::Ptr &trajectory, const CalibParamManager::Ptr &calibParam);
 
@@ -171,10 +171,7 @@ namespace ns_ris {
                                           const Eigen::Vector3d &radarVelI, const Eigen::Vector3d &radarVelJ,
                                           int option, double weight);
 
-        void FixSO3ControlPointAt(int idx);
-
-        void FixPOSControlPointAt(int idx);
-
+        void FixFirSO3ControlPoint();
 
         void AddSO3Centralization(const std::vector<Sophus::SO3d *> &SO3_StoRef,
                                   double weight, std::uint32_t option);
@@ -207,4 +204,4 @@ namespace ns_ris {
 }
 
 
-#endif //RIS_CALIB_TRAJECTORY_ESTIMATOR_H
+#endif //RIS_CALIB_SPLINE_ESTIMATOR_H

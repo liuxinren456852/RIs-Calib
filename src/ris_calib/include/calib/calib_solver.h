@@ -12,7 +12,7 @@
 #include "calib/calib_data_manager.h"
 #include "ctraj/core/trajectory.h"
 #include "ceres/ceres.h"
-#include "calib/trajectory_estimator.h"
+#include "calib/spline_estimator.h"
 #include "opencv4/opencv2/imgcodecs.hpp"
 #include "factor/imu_acce_factor.hpp"
 #include "factor/imu_gyro_factor.hpp"
@@ -79,7 +79,7 @@ namespace ns_ris {
          */
         void BatchOptimization(int radarOptOption, int acceOptOption, int gyroOptOption);
 
-        void SaveEquationGraph(const TrajectoryEstimator::Ptr &estimator);
+        void SaveEquationGraph(const SplineEstimator::Ptr &estimator);
 
         static std::map<const double *, std::string> GetCTrajSO3KnotAddressWithDesc(const Trajectory::Ptr &traj);
 
