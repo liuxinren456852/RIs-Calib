@@ -1,0 +1,3 @@
+[submodule "src/ris_calib/thirdparty/ctraj"]
+	path = src/ris_calib/thirdparty/ctraj
+	url = https://github.com/Unsigned-Long/CTraj.git
