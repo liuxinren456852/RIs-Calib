@@ -176,3 +176,7 @@ roslaunch ris_calib ris-calib-prog.launch
 ```
 
 The corresponding results would be output to the directory you set in the configure file.
+
+
+
+**Attention**: ***Sufficiently excited motion is required for accurate spatiotemporal calibration in `RIs-Calib`!***
