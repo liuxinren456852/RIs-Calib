@@ -87,7 +87,7 @@ https://github.com/Unsigned-Long/RIs-Calib/assets/76953144/3b34d9c5-edda-45f8-ac
 
 ### 2.2 Clone and Compile RIs-Calib
 
-+ clone RIs-Calib:
++ clone `RIs-Calib` (**no need to create a new ros workspace! `RIs-Calib` repository is exactly a ros ws**):
 
   ```bash
   git clone --recursive https://github.com/Unsigned-Long/RIs-Calib.git 

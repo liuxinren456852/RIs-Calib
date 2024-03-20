@@ -20,7 +20,7 @@ To perform calibration for dataset '`simu1`' or '`simu2`', you should change fie
 $(find ris_calib)/config/config-simu12.yaml
 ```
 
-The file '`config-simu12.yaml`' is a configure file for '`RIs-Calib`', which could be found in folder '`{*}/RIs-Calib/src/ris_calib/config`'. The detail configure information could determined be by yourself. Then, we launch '`RIs-Calib`':
+The file '`config-simu12.yaml`' is a configure file for '`RIs-Calib`', which could be found in folder '`{*}/RIs-Calib/src/ris_calib/config`'. The detail configure information could determined be by yourself. Then, we launch '`RIs-Calib`' (**before launch `RIs-Calib`, remember change the path or directory in the yaml-format configure file!**):
 
 ```sh
 roslaunch ris_calib ris-calib-prog.launch
@@ -36,13 +36,13 @@ For simu3 and simu4, you should change field '`config_path`' in '`{*}/RIs-Calib/
 $(find ris_calib)/config/config-simu34.yaml
 ```
 
-Then, we launch '`RIs-Calib`':
+Then, we launch '`RIs-Calib`' (**before launch `RIs-Calib`, remember change the path or directory in the yaml-format configure file!**):
 
 ```sh
 roslaunch ris_calib ris-calib-prog.launch
 ```
 
-The calibration results (left: splines for simu3, middle: splines for simu4, right: sensor suite):
+The calibration results (left: splines for `simu3`, middle: splines for `simu4`, right: sensor suite):
 
 <div align=center><img src="./docs/img/splines3.png" width =33%><img src="./docs/img/splines4.png" width =33%><img src="./docs/img/sensor3.png" width =33%></div>
 
