@@ -58,6 +58,8 @@ namespace ns_ris {
         // imu data item
         sensor_msgs::ImuConstPtr msg = msgInstance.instantiate<sensor_msgs::Imu>();
 
+        CheckMessage<sensor_msgs::Imu>(msg);
+
         auto acce = Eigen::Vector3d(
                 msg->linear_acceleration.x,
                 msg->linear_acceleration.y,
@@ -81,6 +83,8 @@ namespace ns_ris {
     IMUFrame::Ptr SbgIMULoader::UnpackFrame(const rosbag::MessageInstance &msgInstance) {
         // imu data item
         sbg_driver::SbgImuDataConstPtr msg = msgInstance.instantiate<sbg_driver::SbgImuData>();
+
+        CheckMessage<sbg_driver::SbgImuData>(msg);
 
         auto acce = Eigen::Vector3d(
                 msg->accel.x,

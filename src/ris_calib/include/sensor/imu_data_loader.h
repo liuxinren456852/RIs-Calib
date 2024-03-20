@@ -10,6 +10,7 @@
 #include "sbg_driver/SbgImuData.h"
 #include "rosbag/message_instance.h"
 #include "sensor/imu.h"
+#include "util/enum_cast.hpp"
 
 namespace ns_ris {
     enum class IMUModelType {
@@ -32,7 +33,18 @@ namespace ns_ris {
 
         static IMUDataLoader::Ptr GetLoader(const std::string &imuModelStr);
 
-        IMUModelType GetIMUModel() const;
+        [[nodiscard]] IMUModelType GetIMUModel() const;
+
+    protected:
+        template<class MsgType>
+        void CheckMessage(typename MsgType::ConstPtr msg) {
+            if (msg == nullptr) {
+                throw std::runtime_error(
+                        "message type of some IMUs was set incorrectly!!! Wrong type: " +
+                        std::string(EnumCast::enumToString(GetIMUModel()))
+                );
+            }
+        }
     };
 
     class SensorIMULoader : public IMUDataLoader {

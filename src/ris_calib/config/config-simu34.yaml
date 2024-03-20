@@ -12,11 +12,11 @@ Configor:
       - key: /simu_imu2
         value: SENSOR_IMU
     # key: radar topic, value: radar type. Supported radar types are:
-    #   1.         AINSTEIN_RADAR: https://github.com/AinsteinAI/ainstein_radar.git
-    #   2.       AWR1843BOOST_RAW: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git
-    #   3.    AWR1843BOOST_CUSTOM: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git
-    #   4.  AWR1843BOOST_PC2_POSV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, velocity]
-    #   5. AWR1843BOOST_PC2_POSIV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, intensity, velocity]
+    #   1.      AINSTEIN_RADAR: https://github.com/AinsteinAI/ainstein_radar.git
+    #   2.    AWR1843BOOST_RAW: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git
+    #   3. AWR1843BOOST_CUSTOM: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git
+    #   4.    POINTCLOUD2_POSV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, velocity]
+    #   5.   POINTCLOUD2_POSIV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, intensity, velocity]
     #   6. ...
     RadarTopics:
       - key: /simu_radar0

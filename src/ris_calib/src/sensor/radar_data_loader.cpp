@@ -26,11 +26,11 @@ namespace ns_ris {
                     fmt::format(
                             "Unsupported Radar Type: '{}'. "
                             "Currently supported radar types are: \n"
-                            "(1)         AINSTEIN_RADAR: https://github.com/AinsteinAI/ainstein_radar.git\n"
-                            "(2)       AWR1843BOOST_RAW: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git\n"
-                            "(2)    AWR1843BOOST_CUSTOM: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git\n"
-                            "(3)  AWR1843BOOST_PC2_POSV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, velocity]\n"
-                            "(4) AWR1843BOOST_PC2_POSIV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, intensity, velocity]\n"
+                            "(1)      AINSTEIN_RADAR: https://github.com/AinsteinAI/ainstein_radar.git\n"
+                            "(2)    AWR1843BOOST_RAW: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git\n"
+                            "(2) AWR1843BOOST_CUSTOM: https://github.com/Unsigned-Long/ti_mmwave_rospkg.git\n"
+                            "(3)    POINTCLOUD2_POSV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, velocity]\n"
+                            "(4)   POINTCLOUD2_POSIV: 'sensor_msgs/PointCloud2' with point format: [x, y, z, intensity, velocity]\n"
                             "...\n"
                             "If you need to use other radar types, "
                             "please 'Issues' us on the profile of the github repository.",
@@ -46,11 +46,11 @@ namespace ns_ris {
             case RadarModelType::AWR1843BOOST_RAW:
                 radarDataLoader = AWR1843BOOSTRawLoader::Create(radarModel);
                 break;
-            case RadarModelType::AWR1843BOOST_PC2_POSV:
-                radarDataLoader = AWR1843BOOSTPC2POSVLoader::Create(radarModel);
+            case RadarModelType::POINTCLOUD2_POSV:
+                radarDataLoader = PointCloud2POSVLoader::Create(radarModel);
                 break;
-            case RadarModelType::AWR1843BOOST_PC2_POSIV:
-                radarDataLoader = AWR1843BOOSTPC2POSIVLoader::Create(radarModel);
+            case RadarModelType::POINTCLOUD2_POSIV:
+                radarDataLoader = PointCloud2POSIVLoader::Create(radarModel);
                 break;
             case RadarModelType::AWR1843BOOST_CUSTOM:
                 radarDataLoader = AWR1843BOOSTCustomLoader::Create(radarModel);
@@ -72,6 +72,8 @@ namespace ns_ris {
     RadarTargetArray::Ptr AinsteinRadarLoader::UnpackScan(const rosbag::MessageInstance &msgInstance) {
         ainstein_radar_msgs::RadarTargetArray::ConstPtr msg =
                 msgInstance.instantiate<ainstein_radar_msgs::RadarTargetArray>();
+
+        CheckMessage<ainstein_radar_msgs::RadarTargetArray>(msg);
 
         std::vector<RadarTarget::Ptr> targets(msg->targets.size());
 
@@ -95,6 +97,8 @@ namespace ns_ris {
         // for ti mm wave radar, every event saved singly
         ti_mmwave_rospkg::RadarScan::ConstPtr msg = msgInstance.instantiate<ti_mmwave_rospkg::RadarScan>();
 
+        CheckMessage<ti_mmwave_rospkg::RadarScan>(msg);
+
         auto target = RadarTarget::Create(
                 msg->header.stamp.toSec(), {msg->x, msg->y, msg->z}, msg->velocity
         );
@@ -102,14 +106,17 @@ namespace ns_ris {
         return RadarTargetArray::Create(msg->header.stamp.toSec(), {target});
     }
 
-    AWR1843BOOSTPC2POSVLoader::AWR1843BOOSTPC2POSVLoader(RadarModelType radarModel) : RadarDataLoader(radarModel) {}
+    PointCloud2POSVLoader::PointCloud2POSVLoader(RadarModelType radarModel) : RadarDataLoader(radarModel) {}
 
-    AWR1843BOOSTPC2POSVLoader::Ptr AWR1843BOOSTPC2POSVLoader::Create(RadarModelType radarModel) {
-        return std::make_shared<AWR1843BOOSTPC2POSVLoader>(radarModel);
+    PointCloud2POSVLoader::Ptr PointCloud2POSVLoader::Create(RadarModelType radarModel) {
+        return std::make_shared<PointCloud2POSVLoader>(radarModel);
     }
 
-    RadarTargetArray::Ptr AWR1843BOOSTPC2POSVLoader::UnpackScan(const rosbag::MessageInstance &msgInstance) {
+    RadarTargetArray::Ptr PointCloud2POSVLoader::UnpackScan(const rosbag::MessageInstance &msgInstance) {
         sensor_msgs::PointCloud2::ConstPtr msg = msgInstance.instantiate<sensor_msgs::PointCloud2>();
+
+        CheckMessage<sensor_msgs::PointCloud2>(msg);
+
         RadarPOSVCloud radarTargets;
         pcl::fromROSMsg(*msg, radarTargets);
 
@@ -126,14 +133,17 @@ namespace ns_ris {
         return RadarTargetArray::Create(msgInstance.getTime().toSec(), targets);
     }
 
-    AWR1843BOOSTPC2POSIVLoader::AWR1843BOOSTPC2POSIVLoader(RadarModelType radarModel) : RadarDataLoader(radarModel) {}
+    PointCloud2POSIVLoader::PointCloud2POSIVLoader(RadarModelType radarModel) : RadarDataLoader(radarModel) {}
 
-    AWR1843BOOSTPC2POSIVLoader::Ptr AWR1843BOOSTPC2POSIVLoader::Create(RadarModelType radarModel) {
-        return std::make_shared<AWR1843BOOSTPC2POSIVLoader>(radarModel);
+    PointCloud2POSIVLoader::Ptr PointCloud2POSIVLoader::Create(RadarModelType radarModel) {
+        return std::make_shared<PointCloud2POSIVLoader>(radarModel);
     }
 
-    RadarTargetArray::Ptr AWR1843BOOSTPC2POSIVLoader::UnpackScan(const rosbag::MessageInstance &msgInstance) {
+    RadarTargetArray::Ptr PointCloud2POSIVLoader::UnpackScan(const rosbag::MessageInstance &msgInstance) {
         sensor_msgs::PointCloud2::ConstPtr msg = msgInstance.instantiate<sensor_msgs::PointCloud2>();
+
+        CheckMessage<sensor_msgs::PointCloud2>(msg);
+
         RadarPOSIVCloud radarTargets;
         pcl::fromROSMsg(*msg, radarTargets);
 
@@ -159,6 +169,8 @@ namespace ns_ris {
     RadarTargetArray::Ptr AWR1843BOOSTCustomLoader::UnpackScan(const rosbag::MessageInstance &msgInstance) {
         // for ti mm wave radar, every event saved singly
         ti_mmwave_rospkg::RadarScanCustom::ConstPtr msg = msgInstance.instantiate<ti_mmwave_rospkg::RadarScanCustom>();
+
+        CheckMessage<ti_mmwave_rospkg::RadarScanCustom>(msg);
 
         auto target = RadarTarget::Create(
                 msg->header.stamp.toSec(), {msg->x, msg->y, msg->z}, msg->velocity
